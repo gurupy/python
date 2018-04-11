@@ -22,7 +22,7 @@ BgColor = (255, 0, 255)
 
 # init graphics
 def init():
-    global game_pad, bgImage, bgImage2, clock, ship, bullet
+    global game_pad, bgImage, bgImage2, clock
     global bg_up_width, bg_down_width
 
     pygame.init()
@@ -41,55 +41,27 @@ def init():
     bg_down_width = int(w*2/3)
     bgImage2 = pygame.transform.scale(bgImage2, (bg_down_width, int(pad_height*2/3)))
 
-    ###
-    ship = pygame.image.load("res/ship.png").convert_alpha()
-    ship = pygame.transform.scale(ship, (40, 40))
-
-    bullet = pygame.image.load("res/bullet.png").convert_alpha()
-    bullet = pygame.transform.scale(bullet, (30, 10))
-    
     # TODO-3
 
     clock = pygame.time.Clock()
 
 
 def run():
-    global game_pad, bgImage, bgImage2, clock, ship, bullet
+    global game_pad, bgImage, bgImage2, clock
     global bg_up_width, bg_down_width
 
     bg_down_1_x = 0
     bg_down_2_x = bg_down_width
     bg_up_1_x = 0
     bg_up_2_x = bg_up_width
-    ###
-
-    x_curr = 50
-    y_curr = int(pad_height/2)
-    y_change = 0
-    f_width = 40
-    f_height = 40
-
-    bullets = []
-    
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            # TODO-4
+            # TODO-5a
 
-            ###
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    y_change = -5
-                elif event.key == pygame.K_DOWN:
-                    y_change = 5
-                elif event.key == pygame.K_SPACE:
-                    bullets.append([x_curr + f_width, y_curr + 20])
-
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    y_change = 0
-                    
         # draw background color
         # game_pad.fill(BgColor)
 
@@ -100,7 +72,7 @@ def run():
             bg_down_1_x = bg_down_width
         if bg_down_2_x <= bg_down_width*(-1):
             bg_down_2_x = bg_down_width
-        # print(bg_down_1_x, bg_down_2_x)
+        print(bg_down_1_x, bg_down_2_x)
 
         bg_up_1_x -= 1
         bg_up_2_x -= 1
@@ -113,23 +85,6 @@ def run():
         game_pad.blit(bgImage2, (bg_down_1_x, 170))
         game_pad.blit(bgImage2, (bg_down_2_x, 170))
 
-        ###
-        y_curr += y_change
-        if y_curr < 0:
-            y_curr = 0
-        if y_curr > (pad_height - 40):
-            y_curr = pad_height - 40
-        game_pad.blit(ship, (50, y_curr))
-
-        ###
-        if len(bullets) > 0:
-            for i, xy in enumerate(bullets):
-                game_pad.blit(bullet, xy)
-                xy[0] += 5
-                if (xy[0] > pad_width):
-                    bullets.remove(xy)
-                i += 1
-                
         # TODO-3
         # TODO-5b
         # update display

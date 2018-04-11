@@ -20,6 +20,7 @@ BgColor = (255, 0, 255)
 
 # TODO-1a 클래스를 사용해 배경그리기 모듈화하기
 class ScrollBackground:
+
     # TODO-1b
     def __init__(self, file_name):
         self.file = file_name
@@ -42,13 +43,15 @@ class ScrollBackground:
         self.m = speed
 
     def set_size(self, width, height):
-        temp = pygame.image.load(self.file_name).convert_alpha()
+        temp = pygame.image.load(self.file).convert_alpha()
         self.image = pygame.transform.scale(temp, (width, height))
         self.w = self.image.get_width()
 
     def set_scale(self, scale_x, scale_y):
-        temp = pygame.image.load(self.file_name).convert_alpha()
-        self.image = pygame.transform.scale(temp, (temp.get_width()*scale_x, temp.get_height()*scale_y))
+        temp = pygame.image.load(self.file).convert_alpha()
+        width = int(temp.get_width()*scale_x)
+        height = int(temp.get_height()*scale_y)
+        self.image = pygame.transform.scale(temp, (width, height))
         self.w = self.image.get_width()
 
     def draw(self, surface):
@@ -58,8 +61,8 @@ class ScrollBackground:
             self.x1 = self.w
         if self.x2 <= self.w*(-1):
             self.x2 = self.w
-        surface.blit(self.image, self.x1, self.y)
-        surface.blit(self.image, self.x2, self.y)
+        surface.blit(self.image, (self.x1, self.y))
+        surface.blit(self.image, (self.x2, self.y))
 
 
 # init graphics
@@ -74,7 +77,8 @@ def init():
     # image height = 1024
     bgImage1 = ScrollBackground("res/city_background_night_gray.png")
     bgImage2 = ScrollBackground("res/city_background_clean.png")
-    bgImage1.set_scale(0.6, 0.6)
+    bgImage2.set_scale(0.6, 0.6)
+    bgImage2.set_pos(0, int(pad_height*0.6))
 
     # TODO-3
 
@@ -82,13 +86,8 @@ def init():
 
 
 def run():
-    global game_pad, bgImage, bgImage2, clock
-    global bg_up_width, bg_down_width
+    global game_pad, bgImage1, bgImage2, clock
 
-    bg_down_1_x = 0
-    bg_down_2_x = bg_down_width
-    bg_up_1_x = 0
-    bg_up_2_x = bg_up_width
     running = True
     while running:
         for event in pygame.event.get():
@@ -101,24 +100,8 @@ def run():
         # game_pad.fill(BgColor)
 
         # draw scrolling background
-        bg_down_1_x -= 3
-        bg_down_2_x -= 3
-        if bg_down_1_x <= bg_down_width*(-1):
-            bg_down_1_x = bg_down_width
-        if bg_down_2_x <= bg_down_width*(-1):
-            bg_down_2_x = bg_down_width
-        print(bg_down_1_x, bg_down_2_x)
-
-        bg_up_1_x -= 1
-        bg_up_2_x -= 1
-        if bg_up_1_x <= bg_up_width*(-1):
-            bg_up_1_x = bg_up_width
-        if bg_up_2_x <= bg_up_width*(-1):
-            bg_up_2_x = bg_up_width
-        game_pad.blit(bgImage, (bg_up_1_x, 0))
-        game_pad.blit(bgImage, (bg_up_2_x, 0))
-        game_pad.blit(bgImage2, (bg_down_1_x, 170))
-        game_pad.blit(bgImage2, (bg_down_2_x, 170))
+        bgImage1.draw(game_pad)
+        bgImage2.draw(game_pad)
 
         # TODO-3
         # TODO-5b
