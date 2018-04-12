@@ -1,9 +1,7 @@
 # TODO -----------------------------------------------------
 # 1. 클래스를 사용해 모듈화하기
 #    a. 배경처리용 클래스 ScrollBackground 만들기
-#    b. 멤버 변수: x, y, scroll_size, scroll_orientation
-#    c. 멤버 함수: set_size(size), set_speed(speed)
-# 2. 비행기 이미지 생성
+#    b. 비행기 클래스 BattleShip 만들기
 # 3. up/down 키 처리
 # 4. 비행기 움직이기: up/down 키로 이동, 누른 상태는 up/down 계속
 #    a. 비행기 좌표 계산
@@ -20,7 +18,6 @@ BgColor = (255, 0, 255)
 
 # TODO-1a 클래스를 사용해 배경그리기 모듈화하기
 class ScrollBackground:
-    # TODO-1b
     def __init__(self, file_name):
         # self.file = file_name
         self.x1 = 0
@@ -77,8 +74,8 @@ class ScrollBackground:
         # print(self.x1, self.x2, self.y)
 
 
+# TODO-1b 클래스를 사용해 비행기 그리기 모듈화하기
 class BattleShip:
-    # TODO-1b
     def __init__(self, file_name):
         self.x = 0
         self.y = 0
@@ -114,6 +111,7 @@ class BattleShip:
             self.y = pad_height - self.h
         surface.blit(self.image, (self.x, self.y))
 
+
 # init graphics
 def init():
     global game_pad, clock
@@ -127,12 +125,12 @@ def init():
     # create ScrollBackground
     bgImage1 = ScrollBackground("res/city_background_night_gray.png")
     w, h = bgImage1.get_size()
-    stratch_ratio = pad_height/h
-    bgImage1.set_scale(stratch_ratio, stratch_ratio)
+    stretch_ratio = pad_height/h
+    bgImage1.set_scale(stretch_ratio, stretch_ratio)
     bgImage1.set_speed(1)
     bgImage2 = ScrollBackground("res/city_background_clean.png")
-    stratch_ratio *= 0.6
-    bgImage2.set_scale(stratch_ratio, stratch_ratio)
+    stretch_ratio *= 0.6
+    bgImage2.set_scale(stretch_ratio, stretch_ratio)
     bgImage2.set_speed(3)
     bgImage2.set_pos(0, int(pad_height-(pad_height*0.6)))
 
@@ -143,6 +141,7 @@ def init():
     # create bullet image
     bullet = pygame.image.load("res/fireball.png").convert_alpha()
     bullet = pygame.transform.scale(bullet, (30, 10))
+
     # create Enemy
 
     clock = pygame.time.Clock()

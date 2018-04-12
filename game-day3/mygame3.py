@@ -9,6 +9,13 @@
 # ----------------------------------------------------------
 
 import pygame
+from random import *
+
+# global constants
+pad_width = 800
+pad_height = 512
+ColorRed = (255, 0, 0)
+ColorGreen = (0, 255, 0)
 
 
 # 클래스를 사용해 배경그리기 모듈화
@@ -57,19 +64,20 @@ class ScrollBackground:
         self.x2 = self.x1 + self.w
         # print(self.w, temp.get_width(), temp.get_height(), scale_x, scale_y, width, height)
 
-    def draw(self, surface):
+    def draw(self, parent):
         self.x1 -= self.m
         self.x2 -= self.m
-        if self.x1 <= self.w * (-1):
+        if self.x1 <= self.w*(-1):
             self.x1 = self.w
-        if self.x2 <= self.w * (-1):
+        if self.x2 <= self.w*(-1):
             self.x2 = self.w
-        surface.blit(self.image, (self.x1, self.y))
-        surface.blit(self.image, (self.x2, self.y))
+        parent.blit(self.image, (self.x1, self.y))
+        parent.blit(self.image, (self.x2, self.y))
         # print(self.x1, self.x2, self.y)
 
 
 # 클래스를 사용해 비행기 그리기 모듈화
+# TODO create with size
 class BattleShip:
     def __init__(self, file_name):
         self.x = 0
@@ -78,11 +86,13 @@ class BattleShip:
         self.w = self.image.get_width()
         self.h = self.image.get_height()
 
-        # default bullet (w,h)
-        # self.b_size = {'w': 0, 'h': 0}
-        self.b_size = (0, 0)
+        # default bullet
+        self.bullet = pygame.image.load("res/bullet.png")
+        self.bh = self.bullet.get_height()
 
         # default fire effect
+        self.shoot = pygame.mixer.Sound("res/shoot.wav")
+        self.shoot.set_volume(0.05)
 
     def set_pos(self, x, y):
         self.x = x
@@ -106,32 +116,107 @@ class BattleShip:
         return self.image.get_height()
 
     # TODO change_weapon(w_type), add_weapon(w_type, weapon_file)
-    def set_weapon(self, size):
-        # self.b_size['w'] = size[0]
-        # self.b_size['h'] = size[1]
-        self.b_size = size
+    def set_weapon(self, file_name):
+        self.bullet = pygame.image.load(file_name)
+        self.bh = self.bullet.get_height()
 
-    # return bullet position: (x, y)
-    # or return bullet position: (x, y, weapon_type)
     def fire(self):
+        self.shoot.play()
         return [self.x + self.w,
-                int(self.y + self.h / 2 - self.b_size[0] / 2)]
+                int(self.y + self.h/2 - self.bh/2)]
 
-    def draw(self, surface, move_y):
+    def draw(self, parent, move_y):
         self.y += move_y
         if self.y < 0:
             self.y = 0
-        pad_height = surface.get_height()
+        # pad_height = parent.get_height()
         if self.y > (pad_height - self.h):
             self.y = pad_height - self.h
-        surface.blit(self.image, (self.x, self.y))
+        parent.blit(self.image, (self.x, self.y))
+
+
+# 클래스를 사용해 Enemy 그리기 모듈화
+class Enemy:
+    EnemyTypes = ["enemy", "enemy1", "enemy2", "enemy3"]
+    EnemyImages = []
+
+    def __init__(self, enemy_type):
+        # TODO-
+        # if same image object, memory is wasting...
+        file_name = "res/" + enemy_type + ".png"
+        temp = pygame.image.load(file_name).convert_alpha()
+        self.image = pygame.transform.scale(temp, (40, 30))
+        self.h = self.image.get_height()
+        self.w = self.image.get_width()
+        self.x = pad_width
+        self.y = randint(0, pad_height-self.h)
+        self.speed = randint(1, 5)
+
+        self.fired = False
+        temp = pygame.image.load("res/explosion.png").convert_alpha()
+        self.fired_image = pygame.transform.scale(temp, (40, 30))
+
+    def get_pos_x(self):
+        return self.x
+
+    def get_width(self):
+        return self.w
+
+    def set_fired(self):
+        self.fired = True
+
+    def draw(self, parent):
+        self.x -= self.speed
+        self.y += randint(-5, 5)
+        if self.y < 0:
+            self.y = 0
+        # pad_height = parent.get_height()
+        if self.y > (pad_height - self.h):
+            self.y = pad_height - self.h
+        parent.blit(self.image, (self.x, self.y))
+
+
+def check_crash():
+    # fx = x
+    # fy = y
+    # for j, jtem in enumerate(enemyList):
+    #     ex = jtem[0]
+    #     ey = jtem[1]
+    #     if fx > ex and fx < ex + enemy_size:
+    #         if (fy > ey and fy < ey + enemy_size) or (fy + f_height > ey and fy + f_height < ey + enemy_size):
+    #             # print ("hit", fx, fy, ex, ey)
+    #             crashed = True
+    #             crash.play()
+    #             enemyList.remove(jtem)
+    #             shotList.append([fx, fy, 30])
+    #             pygame.mixer.music.pause()
+    #             break;
+    return False
+
+
+def check_hit():
+    # for i, item in enumerate(fireList):
+    #     fx = item[0] + bullet_w  # right x of bullet
+    #     fy = item[1]
+    #     for j, jtem in enumerate(enemyList):
+    #         ex = jtem[0]
+    #         ey = jtem[1]
+    #         if fx > ex and fx < ex + enemy_size:
+    #             if (fy > ey and fy < ey + enemy_size) or (fy + bullet_h > ey and fy + bullet_h < ey + enemy_size):
+    #                 # print ("hit", fx, fy, ex, ey)
+    #                 if len(answerList) > 20 and answerList.count(jtem[2]) > 0:
+    #                     answerList.remove(jtem[2])
+    #                 else:
+    #                     answerList.append(jtem[2])
+    #                 hit.play()
+    #                 fireList.remove(item)
+    #                 enemyList.remove(jtem)
+    #                 shotList.append([fx, fy, 30])
+    #                 break;
+    pass
 
 
 def main():
-    # constants
-    pad_width = 800
-    pad_height = 512
-    # BgColor = (255, 0, 255)
 
     # initialize pygame window
     pygame.init()
@@ -141,7 +226,7 @@ def main():
     # create ScrollBackground
     bg_image1 = ScrollBackground("res/city_background_night_gray.png")
     w, h = bg_image1.get_size()
-    stretch_ratio = pad_height / h
+    stretch_ratio = pad_height/h
     bg_image1.set_scale(stretch_ratio, stretch_ratio)
     bg_image1.set_speed(1)
 
@@ -149,12 +234,12 @@ def main():
     stretch_ratio *= 0.6
     bg_image2.set_scale(stretch_ratio, stretch_ratio)
     bg_image2.set_speed(3)
-    bg_image2.set_pos(0, int(pad_height - (pad_height * 0.6)))
+    bg_image2.set_pos(0, int(pad_height-(pad_height*0.6)))
 
     # create Battleship
     ship = BattleShip("res/ship.png")
     ship.set_size(50, 30)
-    ship.set_pos(30, pad_height / 2 - ship.get_height() / 2)
+    ship.set_pos(30, pad_height/2-ship.get_height()/2)
     # create bullet image
     bullet = pygame.image.load("res/bullet.png").convert_alpha()
     bullet = pygame.transform.scale(bullet, (30, 10))
@@ -164,15 +249,29 @@ def main():
 
     # TODO-
     # create background music & sound effect
+    pygame.mixer.init()
+    hit = pygame.mixer.Sound("res/hit.wav")
+    crash = pygame.mixer.Sound("res/boom.wav")
+    hit.set_volume(0.2)
+    crash.set_volume(0.2)
+    pygame.mixer.music.load('res/bgm_BossMain.wav')
+    pygame.mixer.music.play(-1, 0.0)
+    pygame.mixer.music.set_volume(0.25)
 
     # get pygame clock
     clock = pygame.time.Clock()
 
     # drawing values
     s_move_y = 0
+    enemy_time = 0
 
     # drawing objects
     bullets = []
+    enemies = []
+
+    # play values
+    play_score = 0
+    energy_bar = 100
 
     # game main loop
     running = True
@@ -193,6 +292,23 @@ def main():
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     s_move_y = 0
 
+        # TODO-
+        # create enemy
+        play_level = 1 + int(play_score / 20)
+        enemy_time_max = 20 - play_level
+        enemy_time = (enemy_time + 1) % enemy_time_max
+        if enemy_time == 0:
+            enemies.append(Enemy(enemy_types[0]))
+
+        # TODO-
+        crashed = check_crash()
+        if crashed:
+            # draw crash status
+            # change ship image
+            continue
+
+        check_hit()
+
         # draw background color
         # game_pad.fill(BgColor)
 
@@ -203,7 +319,7 @@ def main():
         # draw battle ship
         ship.draw(game_pad, s_move_y)
 
-        # draw bullets
+        # draw bullets: list of [x, y]
         if len(bullets) > 0:
             for i, xy in enumerate(bullets):
                 game_pad.blit(bullet, xy)
@@ -213,6 +329,18 @@ def main():
 
         # TODO-
         # draw enemies
+        if len(enemies) > 0:
+            for i, e in enumerate(enemies):
+                e.draw(game_pad)
+                if e.get_pos_x() < e.get_width()*(-1):
+                    enemies.remove(e)
+                    energy_bar -= 1
+
+        # TODO-
+        # draw shot enemies
+
+        # TODO-
+        # draw energy bar
 
         # update display
         pygame.display.update()
