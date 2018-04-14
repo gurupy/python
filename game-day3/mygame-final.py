@@ -146,6 +146,8 @@ class BattleShip:
             fx = bull_xy[0] + Bullet.Width  # right x of bullet
             fy = bull_xy[1]
             for j, enemy in enumerate(enemies):
+                if enemy.killed:
+                    continue
                 ex = enemy.get_pos_x()
                 ey = enemy.get_pos_y()
                 if fx > ex and fx < ex + enemy.get_width():
@@ -161,7 +163,6 @@ class BattleShip:
                         break
         # TODO
         # ship collide with enemy?
-
 
     def draw(self, parent, move_y):
         # draw ship
@@ -181,6 +182,7 @@ class BattleShip:
                 if xy[0] > pad_width:
                     self.bullets.remove(xy)
 
+
 # 클래스를 사용해 Enemy 그리기 모듈화
 class Enemy:
     # shapes
@@ -189,6 +191,7 @@ class Enemy:
     ShapeImages = {}
     # fired image list for animation
     FiredImages = []
+    FiredImageNext = 0
 
     # for resizing images
     Size = (0, 0)
@@ -205,9 +208,9 @@ class Enemy:
         self.h = Enemy.ShapeImages[shape].get_height()
         self.x = pad_width
         self.y = randint(0, pad_height-self.h)
-        self.speed = randint(2, 5)
+        self.speed = randint(1, 4)
 
-        # for disply the fired status
+        # for display the fired status
         self.killed = False
         self.killed_image = 0
         self.killed_timer = 0
@@ -222,10 +225,12 @@ class Enemy:
         return self.w
 
     def kill(self):
+        self.killed_image = Enemy.FiredImageNext
         self.killed = True
+        Enemy.FiredImageNext = (Enemy.FiredImageNext+1) % len(Enemy.FiredImages)
 
     def killed_timeout(self):
-        if self.killed_timer > 30:
+        if self.killed_timer > 60:
             return True
         else:
             return False
@@ -243,7 +248,7 @@ class Enemy:
 
         if self.killed:
             self.killed_timer += 1
-            parent.blit(Enemy.FiredImages[0], (self.x, self.y))
+            parent.blit(Enemy.FiredImages[self.killed_image], (self.x, self.y))
         else:
             parent.blit(Enemy.ShapeImages[self.shape], (self.x, self.y))
 
@@ -260,15 +265,32 @@ class Enemy:
 
         # explosion image
         # TODO animated images
-        img = pygame.image.load("res/explosion.png").convert_alpha()
-        if w > 0 and h > 0:
-            img = pygame.transform.scale(img, (w, h))
-        cls.FiredImages.append(img)
+        # img = pygame.image.load("res/explosion.png").convert_alpha()
+        # if w > 0 and h > 0:
+        #     img = pygame.transform.scale(img, (w, h))
+        # cls.FiredImages.append(img)
+
+        # explosion --> text character
+        fg = 200, 50, 50
+        bg = 5, 5, 5
+        text = "그의 이름의 영광을 찬양하고 영화롭게 찬송할지어다 시편 66편 2절"
+        font = pygame.font.SysFont("Malgun Gothic", 40, bold=True)
+        for s in text:
+            bg_img = pygame.Surface([50, 50])
+            bg_img.fill(bg)
+            pygame.draw.circle(bg_img, (255, 250, 50), (25,25), 25)
+            t = font.render(s, True, fg, bg)
+            t.set_colorkey(bg)
+            bg_img.set_colorkey(bg)
+            bg_img.blit(t, (5, 0))
+            # cls.FiredImages.append(t)
+            cls.FiredImages.append(bg_img)
 
     @classmethod
     def set_all_size(cls, size):
         cls.Size = size
         # TODO resize all images
+
 
 # TODO-4
 def check_crash():
@@ -317,11 +339,26 @@ def create_background():
     bg_image2.set_pos(0, int(pad_height-(pad_height*0.6)))
     return [bg_image1, bg_image2]
 
+
 def create_battle_ship():
     ship = BattleShip("res/ship.png")
     ship.set_size(50, 40)
     ship.set_pos(30, pad_height/2-ship.get_height()/2)
     return ship
+
+
+# def create_popup_text(text):
+#     char_list = []
+#     fg = 100, 200, 50
+#     bg = 5, 5, 5
+#     font = pygame.font.SysFont("Malgun Gothic", 40)
+#     for s in text:
+#         print(s)
+#         t = font.render(s, True, fg, bg)
+#         t.set_colorkey(bg)
+#         char_list.append(t)
+#     return char_list
+
 
 def main():
     global ship, enemies
@@ -341,8 +378,8 @@ def main():
     pygame.mixer.init()
     hit = pygame.mixer.Sound("res/hit.wav")
     crash = pygame.mixer.Sound("res/boom.wav")
-    hit.set_volume(0.2)
-    crash.set_volume(0.2)
+    hit.set_volume(0.3)
+    crash.set_volume(0.3)
     pygame.mixer.music.load('res/bgm_BossMain.wav')
     pygame.mixer.music.play(-1, 0.0)
     pygame.mixer.music.set_volume(0.25)
@@ -383,7 +420,7 @@ def main():
         # TODO-3
         # create enemy
         play_level = 1 + int(play_score / 20)
-        enemy_time_max = 20 - play_level
+        enemy_time_max = 40 - play_level
         enemy_time = (enemy_time + 1) % enemy_time_max
         if enemy_time == 0:
             index = randint(0, 3)
