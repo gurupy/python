@@ -9,8 +9,12 @@
 # ----------------------------------------------------------
 
 import pygame
+from random import *
 
-
+# constants
+pad_width = 1024
+pad_height = 600
+    
 # 클래스를 사용해 배경그리기 모듈화
 class ScrollBackground:
     def __init__(self, file_name):
@@ -69,6 +73,23 @@ class ScrollBackground:
         # print(self.x1, self.x2, self.y)
 
 
+# 클래스를 사용해 비행기 그리기 모듈화
+class Enemy:
+    HitSound = None
+    
+    def __init__(self, shape):
+        self.shape = shape
+        temp_file = "res/" + shape + ".png"
+        temp_image = pygame.image.load(temp_file).convert_alpha()
+        self.image = pygame.transform.scale(temp_image, (40, 30))
+        self.x = pad_width;
+        self.y = randint(0, pad_height-30)
+        self.speed = randint(2, 5)
+
+    def draw(self, surface):
+        self.x -= self.speed 
+        surface.blit(self.image, (self.x, self.y))
+        
 # 클래스를 사용해 비행기 그리기 모듈화
 class BattleShip:
     HitSound = None
@@ -134,9 +155,6 @@ class BattleShip:
 
 
 def main():
-    # constants
-    pad_width = 1024
-    pad_height = 600
     # BgColor = (255, 0, 255)
 
     # initialize pygame window
@@ -168,6 +186,7 @@ def main():
 
     # TODO-
     # create Enemy
+    enemy = Enemy("enemy")
 
     # TODO-
     # create background music & sound effect
@@ -225,6 +244,7 @@ def main():
 
         # TODO-
         # draw enemies
+        enemy.draw(game_pad)
 
         # update display
         pygame.display.update()

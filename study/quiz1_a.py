@@ -9,16 +9,22 @@ def load_data():
     return init_list
 
 
-# bubble sort
 def sort_books(books):
     for i in range(len(books)):
-        for j in range(len(books) - 1):
-            pass
+        for j in range(len(books) - 1 - i):
+            if books[j] > books[j + 1]:
+                temp = books[j]
+                books[j] = books[j + 1]
+                books[j + 1] = temp
     return books
 
 
 def filter_books_by_pubdate(books, filter_date):
     result = []
+    for b in books:
+        book_date = b[-4:]
+        if int(book_date) >= filter_date:
+            result.append(b)
     return result
 
 

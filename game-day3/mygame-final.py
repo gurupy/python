@@ -94,7 +94,6 @@ class BattleShip:
         # default bullet (w,h)
         temp = pygame.image.load("res/bullet.png").convert_alpha()
         self.bullet = pygame.transform.scale(temp, (30, 10))
-        self.bullet_size = self.bullet.get_size()
         # (x,y) list of bullets
         self.bullets = []
 
@@ -126,7 +125,6 @@ class BattleShip:
     def set_weapon(self, w_type, size):
         temp = pygame.image.load("res/" + w_type + ".png").convert_alpha()
         self.bullet = pygame.transform.scale(temp, size)
-        self.bullet_size = bullet.get_size()
 
     # def get_bullets(self):
     #     return self.bullets
@@ -136,24 +134,24 @@ class BattleShip:
         # TODO-2.1 효과음: 발사
         self.shoot.play()
         x = self.x + self.w
-        y = int(self.y + self.h / 2 - self.bullet_size[0] / 2)
+        y = int(self.y + self.h / 2 - self.bullet.get_height() / 2)
         # or .append({'x':x, 'y':y})
         self.bullets.append([x, y])
 
-    def check_collision(self, enemies):
+    def check_collision(self, targets):
         # bullet shot enemy?
+        hit_ok = False
         for i, bull_xy in enumerate(self.bullets):
             fx = bull_xy[0] + Bullet.Width  # right x of bullet
             fy = bull_xy[1]
-            for j, enemy in enumerate(enemies):
+            for j, enemy in enumerate(targets):
                 if enemy.killed:
                     continue
                 ex = enemy.get_pos_x()
                 ey = enemy.get_pos_y()
-                if fx > ex and fx < ex + enemy.get_width():
-                    if (fy > ey and fy < ey + enemy.get_width()) or \
-                            (fy + Bullet.Height > ey and \
-                            fy + Bullet.Height < ey + enemy.get_width()):
+                if ex < fx < ex + enemy.get_width():
+                    if (ey < fy < ey + enemy.get_width()) or \
+                            (ey < fy + Bullet.Height < ey + enemy.get_width()):
                         hit_ok = True
                         # hit.play()
                         self.bullets.remove(bull_xy)
@@ -163,6 +161,8 @@ class BattleShip:
                         break
         # TODO
         # ship collide with enemy?
+
+        return hit_ok
 
     def draw(self, parent, move_y):
         # draw ship
@@ -341,10 +341,11 @@ def create_background():
 
 
 def create_battle_ship():
-    ship = BattleShip("res/ship.png")
-    ship.set_size(50, 40)
-    ship.set_pos(30, pad_height/2-ship.get_height()/2)
-    return ship
+    bs = BattleShip("res/ship.png")
+    bs.set_size(50, 40)
+    bs.set_pos(30, pad_height/2-bs.get_height()/2)
+    bs.set_weapon("bullet", (40, 10))
+    return bs
 
 
 # def create_popup_text(text):
