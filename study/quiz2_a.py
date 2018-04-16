@@ -4,7 +4,7 @@ def validate_seq_number(nums):
     for i in range(0, len(nums) - 1):
         if int(nums[i]) == (nums[i+1] + 1) % 10:
             seq_count += 1
-            print("seq- %d, %d, %d" % (nums[i], nums[i + 1], seq_count))
+            print("seq- %d, %d, %d" % (nums[i], nums[i+1], seq_count))
         else:
             seq_count = 0
             
