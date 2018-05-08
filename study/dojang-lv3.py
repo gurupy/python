@@ -1,8 +1,6 @@
 # http://codingdojang.com/scode/266?answer_mode=hide
 def p266():
     X, Y = (int(x) for x in input("input 2 number: ").split(" "))
-    # X, Y = int(a), int(b)
-    print(X, Y)
     matrix = [[-1 for i in range(Y)] for j in range(X)]
 
     x = y = 0
