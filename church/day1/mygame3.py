@@ -1,8 +1,13 @@
 # TODO -----------------------------------------------------
-# 1. 동일한 배경이미지 2개를 사용해서 끊김없는 배경 스크롤
-#    a. 이미지 생성
-#    b. 이미지 좌표 계산
-#    c. 이미지 그리기
+# 1. 비행기 움직이기
+#    a. 비행기용 이미지 준비
+#    b. 화살표 up/down 키 이벤트 받기
+#    c. 이미지 좌표 계산
+#    d. 이미지 그리기
+# 2. 비행기 좌표 계산 개선
+#    a. 키를 누르고 있는 동안 계속 이동
+#    b. up 키를 눌렀을 때 화면을 벗어나서 위로 올라가지 못하게 하기
+#    c. down 키를 눌렀을 때 화면을 벗어나서 아래로 내려가지 못하게 하기
 # ----------------------------------------------------------
 
 import pygame
@@ -17,7 +22,7 @@ pygame.init()
 
 # create game window
 game_pad = pygame.display.set_mode((pad_width, pad_height))
-pygame.display.set_caption("My PyGame")
+pygame.display.set_caption("My 3rd PyGame")
 
 # 배경 이미지 생성하기
 bgImage = pygame.image.load("bg_cloud.png").convert()

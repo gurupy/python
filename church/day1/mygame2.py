@@ -17,7 +17,7 @@ pygame.init()
 
 # create game window
 game_pad = pygame.display.set_mode((pad_width, pad_height))
-pygame.display.set_caption("My PyGame")
+pygame.display.set_caption("My 2nd PyGame")
 
 # 배경 이미지 생성하기
 bgImage = pygame.image.load("bg_cloud.png").convert()
