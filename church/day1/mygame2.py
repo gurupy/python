@@ -26,7 +26,6 @@ bgImage = pygame.transform.scale(bgImage, (pad_width, pad_height))
 
 # TODO-1a
 # 같은 배경 이미지를 한장 더 만들기
-bgImage2 = bgImage
 
 # create refresh timer
 clock = pygame.time.Clock()
@@ -47,7 +46,6 @@ while running:
     # TODO-1c
     # draw image on game window
     game_pad.blit(bgImage, (0, 0))
-    game_pad.blit(bgImage2, (0, 0))
 
     # update display
     pygame.display.update()

@@ -23,9 +23,7 @@ pygame.display.set_caption("My 1st PyGame")
 
 # TODO-1a
 # 배경 이미지 생성하기
-bgImage = pygame.image.load("bg_cloud.png").convert()
 # 배경 이미지를 게임화면에 가득 채우도록 크기 조절하기
-bgImage = pygame.transform.scale(bgImage, (pad_width, pad_height))
 
 # create refresh timer
 clock = pygame.time.Clock()
@@ -48,7 +46,6 @@ while running:
 
     # TODO-1c
     # draw image on game window
-    game_pad.blit(bgImage, (0, 0))
 
     # update display
     pygame.display.update()
