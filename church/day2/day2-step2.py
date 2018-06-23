@@ -157,7 +157,7 @@ while running:
             xy[1] = randint(-3, 3)
             enemies_xy.remove(xy)
         else:
-            game_pad.blit(bullet, xy)
+            game_pad.blit(enemy, xy)
 
     # update display
     pygame.display.update()
