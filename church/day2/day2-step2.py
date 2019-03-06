@@ -16,7 +16,7 @@
 import pygame
 # TODO-2d 랜덤 패키지 추가
 from random import *
-
+ 
 # global variables
 pad_width = 640
 pad_height = 480
